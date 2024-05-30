@@ -1,0 +1,39 @@
+pipeline{
+agent any
+tools{
+maven 'supriya-maven'
+}
+stages{
+stage("checkoutt"){
+steps{
+git url:'https://github.com/Supu-27/DevOpsClassCodes'
+echo 'pulled from github successfully'
+}
+}
+stage("codecompile by supriya"){
+steps{
+sh "mvn compile"
+echo 'converted the code from human readable to machine readable '
+}
+}
+stage("codetest by supriya"){
+steps{
+sh "mvn test"
+echo 'run and execute the test cases written in selenium'
+}
+}
+stage("qa by supriya"){
+steps{
+sh "mvn pmd:pmd"
+echo 'code review done'
+
+}
+}
+stage("package by supriya"){
+steps{
+sh "mvn package"
+echo 'convert the files to war file'
+}
+}
+}
+}
