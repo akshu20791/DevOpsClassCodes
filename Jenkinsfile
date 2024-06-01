@@ -1,27 +1,25 @@
 pipeline {
     agent any
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
-                git url:'https://github.com/mariantom/DevOpsClassCodes', branch: "master"
+                git url: 'https://github.com/mariantom/DevOpsClassCodes', branch: 'master'
             }
         }
         stage('Build') {
             steps {
-               sh "mvn clean package"
+                sh 'mvn clean package'
             }
         }
-       
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t mariaimg .'
-                sh 'docker tag mariaimg:latest mariantom/mariaddbook:latest'
+                sh 'docker build -t mariantom/mariaimgaddbook:latest .'
             }
         }
-        stage('Docker login') {
+        stage('Docker Login and Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
                     sh 'docker push mariantom/mariaimgaddbook:latest'
                 }
             }
