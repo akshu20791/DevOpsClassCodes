@@ -34,5 +34,16 @@ pipeline {
                 }
             }
         }
+        stage('Move WAR File') {
+            steps {
+                script {
+                    def warFile = '/var/lib/jenkins/workspace/akshat-pipeline/target/addressbook.war'
+                    def tomcatDir = '/opt/apache-tomcat-8.5.100/webapps/'
+                    sh "if [ -f ${warFile} ]; then sudo mv ${warFile} ${tomcatDir}; else echo 'WAR file does not exist'; exit 1; fi"
+                }
+            }
+        }
     }
+}
+
 }
