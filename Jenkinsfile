@@ -1,40 +1,41 @@
 pipeline {
     agent any
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
-                git url:'https://github.com/akshu20791/DevOpsClassCodes/', branch: "master"
+                git url: 'https://github.com/mariantom/DevOpsClassCodes', branch: 'master'
             }
         }
         stage('Build') {
             steps {
-               sh "mvn clean package"
+                sh 'mvn clean package'
             }
         }
-       
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t akshatimg .'
-                sh 'docker tag akshatimg:latest akshu20791/akshatimgaddbook:latest'
+                sh 'docker build -t mariantom/mariaimgaddbook:latest .'
             }
         }
-        stage('Docker login') {
+        stage('Docker Login and Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockercred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh 'docker push akshu20791/akshatimgaddbook:latest'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push mariantom/mariaimgaddbook:latest'
                 }
             }
         }
         stage('Deploy') {
             steps {
                 script {
-                    def dockerCmd = 'docker run -itd --name My-first-containe211 -p 80:8082 akshu20791/akshatimgaddbook:latest'
+                    def dockerCmd = 'docker run -itd --name My-first-containe211 -p 80:8082 mariantom/mariaimgaddbook:latest'
                     sshagent(['sshkeypair']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.20.232 ${dockerCmd}"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172-31-22-46 ${dockerCmd}"
                     }
                 }
             }
         }
     }
+}
+
+
 }
