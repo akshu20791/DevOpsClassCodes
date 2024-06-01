@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                git url:'https://github.com/akshu20791/DevOpsClassCodes/', branch: "master"
+                git url:'https://github.com/mariantom/DevOpsClassCodes', branch: "master"
             }
         }
         stage('Build') {
@@ -14,24 +14,24 @@ pipeline {
        
         stage('Build Image') {
             steps {
-                sh 'docker build -t akshatimg .'
-                sh 'docker tag akshatimg:latest akshu20791/akshatimgaddbook:latest'
+                sh 'docker build -t mariaimg .'
+                sh 'docker tag mariaimg:latest mariantom/mariaddbook:latest'
             }
         }
         stage('Docker login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockercred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh 'docker push akshu20791/akshatimgaddbook:latest'
+                    sh 'docker push mariantom/mariaimgaddbook:latest'
                 }
             }
         }
         stage('Deploy') {
             steps {
                 script {
-                    def dockerCmd = 'docker run -itd --name My-first-containe211 -p 80:8082 akshu20791/akshatimgaddbook:latest'
+                    def dockerCmd = 'docker run -itd --name My-first-containe211 -p 80:8082 mariantom/mariaimgaddbook:latest'
                     sshagent(['sshkeypair']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.20.232 ${dockerCmd}"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172-31-22-46 ${dockerCmd}"
                     }
                 }
             }
